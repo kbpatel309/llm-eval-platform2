@@ -1,54 +1,61 @@
-import { useEffect, useState } from 'react';
+'use client'
 
-type PromptResult = {
-  id: number;
-  prompt: string;
-  model: string;
-  response: string;
-  accuracy: number;
-  relevance: number;
-  responseTime: number;
-  createdAt: string;
-};
+import { useEffect, useState } from 'react';
+import { Bar } from 'react-chartjs-2';
+
+import {
+    Chart as ChartJS,
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+  } from 'chart.js';
+  
+  // Register the necessary components
+  ChartJS.register(
+    CategoryScale,
+    LinearScale,
+    BarElement,
+    Title,
+    Tooltip,
+    Legend
+  );
+
 
 export default function AnalyticsDashboard() {
-  const [data, setData] = useState<PromptResult[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const [data, setData] = useState([]);
 
   useEffect(() => {
     const fetchData = async () => {
-      try {
-        const response = await fetch('/api/analytics');
-        if (!response.ok) {
-          throw new Error('Failed to fetch analytics data');
-        }
-        const result = await response.json();
-        setData(result);
-      } catch (err) {
-        setError(err.message);
-      }
+      const response = await fetch('/api/analytics');
+      const result = await response.json();
+      setData(result);
     };
     fetchData();
   }, []);
 
-  if (error) {
-    return <div>Error: {error}</div>;
-  }
+  const chartData = {
+    labels: data.map((item) => item.model),
+    datasets: [
+      {
+        label: 'Accuracy',
+        data: data.map((item) => item.accuracy),
+        backgroundColor: 'rgba(75, 192, 192, 0.6)',
+      },
+      {
+        label: 'Relevance',
+        data: data.map((item) => item.relevance),
+        backgroundColor: 'rgba(153, 102, 255, 0.6)',
+      },
+      {
+        label: 'Response Time',
+        data: data.map((item) => item.responseTime),
+        backgroundColor: 'rgba(255, 159, 64, 0.6)',
+      },
+    ],
+  };
 
-  return (
-    <div>
-      <h2>Analytics Dashboard</h2>
-      {data.map((result) => (
-        <div key={result.id}>
-          <p>Prompt: {result.prompt}</p>
-          <p>Model: {result.model}</p>
-          <p>Accuracy: {result.accuracy.toFixed(2)}%</p>
-          <p>Relevance: {result.relevance.toFixed(2)}%</p>
-          <p>Response Time: {result.responseTime}ms</p>
-          <p>Date: {new Date(result.createdAt).toLocaleString()}</p>
-          <hr />
-        </div>
-      ))}
-    </div>
-  );
+  return <Bar data={chartData} />;
 }

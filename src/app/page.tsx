@@ -5,6 +5,7 @@ export default function Home() {
   return (
     <main>
       <h1>LLM Evaluation Platform</h1>
+      <PromptForm />
       <AnalyticsDashboard />
     </main>
   );
