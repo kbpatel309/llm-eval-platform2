@@ -37,6 +37,7 @@ export default function AnalyticsDashboard() {
   }, []);
 
   const chartData = {
+    // Look up error Property 'model/accuracy/etc' does not exist on type 'never'
     labels: data.map((item) => item.model),
     datasets: [
       {
