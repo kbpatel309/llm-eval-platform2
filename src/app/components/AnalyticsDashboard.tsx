@@ -58,5 +58,6 @@ export default function AnalyticsDashboard() {
     ],
   };
 
+  // check code for return statements
   return <Bar data={chartData} />;
 }
